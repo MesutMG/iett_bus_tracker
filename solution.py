@@ -9,7 +9,7 @@ import zeep
 import json
 from pprint import pprint
 
-'''
+
 def announcements(line_code):
     url = 'https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl'
     client = zeep.Client(wsdl = url)
@@ -52,22 +52,22 @@ def max_speeds():
             c3 = int(i['Hiz'])
             l[2] = i
     return l
-'''
+
 
 def show_line_stops(line_code, direction):
     url = 'https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl'
     client = zeep.Client(wsdl=url)
-    return client.service.DurakDetay_GYY(line_code)
+    fuel_xml = client.service.DurakDetay_GYY(line_code)
+    l = list()
+    for i in fuel_xml.findall('Table'):
+        if i.find('YON').text == direction:
+            l.append(i.find('DURAKADI').text)
+    return l
 
 def live_tracking(line_code, direction):
     pass
 
 def main():
-    print(show_line_stops('16S','G'))
+
     return 0
-
-from lxml import etree
-
-xml_string = show_line_stops('19T','G')
-root = etree.parse(xml_string)
-print(root)
+main()
