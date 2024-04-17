@@ -7,6 +7,7 @@ student_id = "231401003"
 
 import zeep
 import json
+import re as r
 from pprint import pprint
 
 
@@ -57,17 +58,46 @@ def max_speeds():
 def show_line_stops(line_code, direction):
     url = 'https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl'
     client = zeep.Client(wsdl=url)
-    fuel_xml = client.service.DurakDetay_GYY(line_code)
+    xmlfile = client.service.DurakDetay_GYY(line_code)
     l = list()
-    for i in fuel_xml.findall('Table'):
+    for i in xmlfile.findall('Table'):
         if i.find('YON').text == direction:
             l.append(i.find('DURAKADI').text)
     return l
 
 def live_tracking(line_code, direction):
-    pass
+    urlstop = 'https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl'
+    urlbus = 'https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl'
+
+    clientstop = zeep.Client(wsdl=urlstop)
+    clientbus = zeep.Client(wsdl=urlbus)
+
+    stoploc_xml = clientstop.service.DurakDetay_GYY(line_code)
+    stops_locs = list()
+
+    for i in stoploc_xml.findall('Table'):
+        l = list()
+        if i.find('YON').text == direction:
+            l.append(i.find('DURAKADI').text)
+            l.append(float(i.find('YKOORDINATI').text))
+            l.append(float(i.find('XKOORDINATI').text))
+            stops_locs.append(l)
+
+    busloc = json.loads(clientbus.service.GetHatOtoKonum_json(line_code))
+    l = list()
+    for i in busloc:
+        match = r.search(r'_(\w)_', i['guzergahkodu']).group()
+        if match == '_' + direction + '_':
+            l.append([i['kapino'],float(i['enlem']),float(i['boylam'])])
+    print(stops_locs)
+    with open("where.js", "w") as file:
+        file.write(f'stops = {stops_locs}\nbuses = {l}')
 
 def main():
-
+    pprint(announcements('132C'))
+    print(stopping_buses())
+    pprint(max_speeds())
+    pprint(show_line_stops('132C','G'))
+    live_tracking('132C','G')
     return 0
 main()
