@@ -1,10 +1,3 @@
-############ Do not change the assignment code value ############
-assignment_code = 140110201
-name = "Mesut"
-surname = "Travacı"
-student_id = "231401003"
-### Do not change the variable names above, just fill them in ###
-
 import zeep
 import json
 import re as r
