@@ -87,10 +87,5 @@ def live_tracking(line_code, direction):
         file.write(f'stops = {stops_locs}\nbuses = {l}')
 
 def main():
-    pprint(announcements('132C'))
-    print(stopping_buses())
-    pprint(max_speeds())
-    pprint(show_line_stops('132C','G'))
-    live_tracking('132C','G')
     return 0
 main()
