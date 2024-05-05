@@ -92,5 +92,5 @@ def live_tracking(line_code, direction):
     with open("where.js", "w") as file:
         file.write(f'stops = {json.dumps(stops_locs)};\nbuses = {json.dumps(bus_locs)};')
 
-    return 0
+
 
